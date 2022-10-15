@@ -1,0 +1,15 @@
+node_modules
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Optional npm cache directory
+.npm
