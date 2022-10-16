@@ -23,19 +23,7 @@ const token = async () => {
 		password: password,
 	};
 
-	try {
-		let response = await axios({
-			method: "post",
-			url: url,
-			data: req,
-		});
-
-		const data = await response.data;
-		return data;
-	} catch (error) {
-		console.log(error);
-		return error;
-	}
+	return await sendRequest(req);
 };
 
 const idRegistrasiMahasiswa = async (token, npm) => {
@@ -45,19 +33,7 @@ const idRegistrasiMahasiswa = async (token, npm) => {
 		filter: `nim ~* '${npm}' order by id_periode_masuk desc`,
 	};
 
-	try {
-		let response = await axios({
-			method: "post",
-			url: url,
-			data: req,
-		});
-
-		const data = await response.data;
-		return data;
-	} catch (error) {
-		console.log("GET ID Registrasi ", error);
-		return error;
-	}
+	return await sendRequest(req);
 };
 
 const insertLulusan = async (token, data) => {
@@ -67,6 +43,46 @@ const insertLulusan = async (token, data) => {
 		record: data,
 	};
 
+	return await sendRequest(req);
+};
+
+const getStatusAKM = async (token, npm, semester) => {
+	let filter = ` nim ~* '${npm}' and id_semester ~* '${semester}'`;
+	let req = {
+		act: action.GET_AKM,
+		token: token,
+		filter: filter,
+	};
+
+	return await sendRequest(req);
+};
+
+const updateAkmFeeder = async (token, arg) => {
+	let key = {
+		id_registrasi_mahasiswa: arg.id_registrasi_mahasiswa,
+		id_semester: arg.semester,
+	};
+
+	let record = {
+		id_status_mahasiswa: arg.id_status_mahasiswa,
+		ips: arg.ips,
+		ipk: arg.ipk,
+		sks_semester: arg.sks,
+		total_sks: arg.total_sks,
+		biaya_kuliah_smt: arg.biaya,
+	};
+
+	let req = {
+		act: action.UPDATE_LIST_KULIAH_MHS,
+		token: token,
+		key: key,
+		record: record,
+	};
+
+	return await sendRequest(req);
+};
+
+const sendRequest = async (req) => {
 	try {
 		let response = await axios({
 			method: "post",
@@ -77,9 +93,15 @@ const insertLulusan = async (token, data) => {
 		const data = await response.data;
 		return data;
 	} catch (error) {
-		console.log("Error insert lulusan : ", error);
+		console.log("Error Send Request : ", error);
 		return error;
 	}
 };
 
-module.exports = { token, idRegistrasiMahasiswa, insertLulusan };
+module.exports = {
+	token,
+	idRegistrasiMahasiswa,
+	insertLulusan,
+	getStatusAKM,
+	updateAkmFeeder,
+};

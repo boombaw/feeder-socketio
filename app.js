@@ -3,7 +3,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 //websocket
-const lulusan = require("./routes/lulusan");
+require("./routes/lulusan"); // lulusan -> [insert lulusan]
+require("./routes/akm"); //akm -> [update akm, insert akm]
 
 app.use(cors);
 

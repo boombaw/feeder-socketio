@@ -29,4 +29,19 @@ function GetLulusan() {
             tm.KDPSTMSMHS = :kd_prodi AND tl.ta_lulus = :ta_lulus `;
 }
 
-module.exports = { GetLulusan };
+const SELECT_AKM = `SELECT
+                        takm.id,
+                        takm.NIMHSTRAKM npm,
+                        tm.NMMHSMSMHS AS name,
+                        takm.NLIPSTRAKM ips,
+                        takm.NLIPKTRAKM ipk,
+                        takm.SKSEMTRAKM sks,
+                        takm.SKSTTTRAKM total_sks,
+                        takm.BIAYA biaya 
+                    FROM
+                        tbl_aktifitas_kuliah_mahasiswa takm 
+                    JOIN tbl_mahasiswa tm ON
+                        tm.NIMHSMSMHS = takm.NIMHSTRAKM
+                    WHERE takm.KDPSTTRAKM  = :kd_prodi AND takm.THSMSTRAKM = :tahun`;
+
+module.exports = { GetLulusan, SELECT_AKM };
