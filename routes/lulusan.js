@@ -165,7 +165,7 @@ async function sendResponse(index, npm, name, params) {
 }
 
 async function ListLulusan(kd_prodi, ta_lulus) {
-	const users = await db.sequelize.query(GetLulusan(), {
+	const users = await db.sequelize.query(GetLulusan, {
 		replacements: { kd_prodi: kd_prodi, ta_lulus: ta_lulus },
 		type: db.sequelize.QueryTypes.SELECT,
 		logging: false,

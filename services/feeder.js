@@ -1,19 +1,33 @@
 const fetch = require("node-fetch");
 const action = require("../services/commands");
 const axios = require("axios");
-// const redisClient = require("../database/redis/conn");
+const redisClient = require("../database/redis/conn");
 
 let url = process.env.FEEDER_HOST;
 
 const token = async () => {
-	// const token = await redisClient.get("feeder", (err, result) => {
-	// 	if (err) {
-	// 		console.log(err);
-	// 	}
-	// 	console.log(result);
-	// });
-	// console.log(token);
+	const token = await redisClient.get("token");
 
+	if (token == null) {
+		const data = await getToken();
+		const { error_code, error_desc, data: tokenData } = data;
+
+		if (error_code == 0) {
+			const { token } = tokenData;
+			redisClient.setEx("token", 120, token);
+		}
+
+		return data;
+	} else {
+		return {
+			error_code: 0,
+			error_desc: "",
+			data: { token },
+		};
+	}
+};
+
+const getToken = async () => {
 	let username = process.env.FEEDER_USERNAME;
 	let password = process.env.FEEDER_PASSWORD;
 
@@ -27,6 +41,30 @@ const token = async () => {
 };
 
 const idRegistrasiMahasiswa = async (token, npm) => {
+	const keyRedis = "id_registrasi_mahasiswa_" + npm;
+
+	let id_registrasi_mahasiswa = await redisClient.get(keyRedis);
+
+	if (id_registrasi_mahasiswa == null) {
+		const data = await getIdRegistrasiMahasiswa(token, npm);
+		const { error_code, error_desc, data: idRegistrasiData } = data;
+
+		if (error_code == 0) {
+			({ id_registrasi_mahasiswa } = idRegistrasiData[0]);
+			redisClient.setEx(keyRedis, 600, id_registrasi_mahasiswa);
+		}
+
+		return data;
+	} else {
+		return {
+			error_code: 0,
+			error_desc: "",
+			data: [{ id_registrasi_mahasiswa }],
+		};
+	}
+};
+
+const getIdRegistrasiMahasiswa = async (token, npm) => {
 	let req = {
 		act: action.GET_RIWAYAT_PENDIDIKAN_MHS,
 		token: token,
@@ -57,6 +95,18 @@ const getStatusAKM = async (token, npm, semester) => {
 	return await sendRequest(req);
 };
 
+const getLastAKMFeeder = async (token, npm, sms_prodi) => {
+	let filter = ` nim ~* '${npm}' and id_prodi = '${sms_prodi}' order by id_periode_masuk DESC`;
+	let req = {
+		act: action.GET_LIST_KULIAH_MHS,
+		token: token,
+		filter: filter,
+		limit: 1,
+	};
+
+	return await sendRequest(req);
+};
+
 const updateAkmFeeder = async (token, arg) => {
 	let key = {
 		id_registrasi_mahasiswa: arg.id_registrasi_mahasiswa,
@@ -77,6 +127,16 @@ const updateAkmFeeder = async (token, arg) => {
 		token: token,
 		key: key,
 		record: record,
+	};
+
+	return await sendRequest(req);
+};
+
+const insertCutiFeeder = async (token, params) => {
+	let req = {
+		act: action.INSERT_LIST_KULIAH_MHS,
+		token: token,
+		record: params,
 	};
 
 	return await sendRequest(req);
@@ -104,4 +164,6 @@ module.exports = {
 	insertLulusan,
 	getStatusAKM,
 	updateAkmFeeder,
+	getLastAKMFeeder,
+	insertCutiFeeder,
 };

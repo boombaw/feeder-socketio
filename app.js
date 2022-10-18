@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 //websocket
 require("./routes/lulusan"); // lulusan -> [insert lulusan]
 require("./routes/akm"); //akm -> [update akm, insert akm]
+require("./routes/cuti"); //cuti -> [insert akm]
 
 app.use(cors);
 

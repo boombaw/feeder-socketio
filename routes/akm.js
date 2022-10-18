@@ -8,7 +8,6 @@ const {
 	idRegistrasiMahasiswa,
 	updateAkmFeeder,
 } = require("../services/feeder");
-const { response } = require("express");
 
 const updateAKM = io.of("/update-akm");
 
