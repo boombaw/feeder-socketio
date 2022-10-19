@@ -89,6 +89,7 @@ async function ListAKM(kd_prodi, tahun) {
 		type: db.sequelize.QueryTypes.SELECT,
 		logging: false,
 	});
+
 	return data;
 }
 

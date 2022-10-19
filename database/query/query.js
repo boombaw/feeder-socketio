@@ -55,4 +55,25 @@ const SELECT_CUTI = `SELECT
                         AND a.tahunajaran = :tahun
                         AND a.status = 'C' `;
 
-module.exports = { GetLulusan, SELECT_AKM, SELECT_CUTI };
+const SELECT_DROPOUT = `SELECT
+                            a.npm,
+                            b.NMMHSMSMHS AS name,
+                            a.status ,
+                            a.tahunajaran ,
+                            a.validate ,
+                            c.skep,
+                            c.tgl_skep,
+                            c.alasan,
+                            b.KDPSTMSMHS kd_prodi
+                        FROM
+                            tbl_status_mahasiswa AS a
+                        JOIN tbl_mahasiswa AS b ON
+                            a.npm = b.NIMHSMSMHS
+                        JOIN tbl_dropout AS c ON
+                            a.npm = c.npm_mahasiswa
+                        WHERE
+                            a.tahunajaran = :tahun
+                        AND b.KDPSTMSMHS  = :kd_prodi
+                        AND a.status IN('D', 'K', 'W')`;
+
+module.exports = { GetLulusan, SELECT_AKM, SELECT_CUTI, SELECT_DROPOUT };

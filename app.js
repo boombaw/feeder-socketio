@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 require("./routes/lulusan"); // lulusan -> [insert lulusan]
 require("./routes/akm"); //akm -> [update akm, insert akm]
 require("./routes/cuti"); //cuti -> [insert akm]
+require("./routes/dropout"); //dropout -> [insert dropout, update dropout]
 
 app.use(cors);
 

@@ -82,7 +82,7 @@ async function ListCuti(kd_prodi, tahun) {
 	let data = await db.sequelize.query(SELECT_CUTI, {
 		replacements: { kd_prodi: kd_prodi, tahun: tahun },
 		type: db.sequelize.QueryTypes.SELECT,
-		logging: true,
+		logging: false,
 	});
 	return data;
 }

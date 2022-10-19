@@ -69,6 +69,7 @@ const getIdRegistrasiMahasiswa = async (token, npm) => {
 		act: action.GET_RIWAYAT_PENDIDIKAN_MHS,
 		token: token,
 		filter: `nim ~* '${npm}' order by id_periode_masuk desc`,
+		limit: 1,
 	};
 
 	return await sendRequest(req);
@@ -80,6 +81,18 @@ const insertLulusan = async (token, data) => {
 		token: token,
 		record: data,
 	};
+
+	return await sendRequest(req);
+};
+
+const insertDOFeeder = async (token, params) => {
+	let req = {
+		act: action.INSERT_LULUS_DO,
+		token: token,
+		record: params,
+	};
+
+	// console.log(JSON.stringify(req));
 
 	return await sendRequest(req);
 };
@@ -166,4 +179,5 @@ module.exports = {
 	updateAkmFeeder,
 	getLastAKMFeeder,
 	insertCutiFeeder,
+	insertDOFeeder,
 };
