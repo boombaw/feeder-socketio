@@ -12,7 +12,7 @@ const url = `redis://${config.username}:${config.password}@${config.host}:${conf
 const redisClient = redis.createClient({ url: url });
 
 redisClient.on("error", (err) => {
-	console.log("Error Redis Connection : ", err);
+	console.log("Error Redis Connection ");
 });
 
 redisClient.connect();
