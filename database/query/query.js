@@ -19,7 +19,7 @@ const GetLulusan = `SELECT
                         tl.flag_feeder ,
                         tl.no_transkrip_akademik,
                         tl.has_sync,
-                        tm.NMMHSMSMHS AS name,
+                        tm.NMMHSMSMHS AS name
                     FROM
                         tbl_lulusan tl
                     JOIN tbl_mahasiswa tm ON
