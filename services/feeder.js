@@ -97,6 +97,15 @@ const insertDOFeeder = async (token, params) => {
 	return await sendRequest(req);
 };
 
+const insertNAFeeder = async (token, params) => {
+	let req = {
+		act: action.INSERT_LIST_KULIAH_MHS,
+		token: token,
+		record: params,
+	};
+	return await sendRequest(req);
+};
+
 const getStatusAKM = async (token, npm, semester) => {
 	let filter = ` nim ~* '${npm}' and id_semester ~* '${semester}'`;
 	let req = {
@@ -180,4 +189,5 @@ module.exports = {
 	getLastAKMFeeder,
 	insertCutiFeeder,
 	insertDOFeeder,
+	insertNAFeeder,
 };

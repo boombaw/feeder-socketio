@@ -42,6 +42,21 @@ const SELECT_AKM = `SELECT
                         tm.NIMHSMSMHS = takm.NIMHSTRAKM
                     WHERE takm.KDPSTTRAKM  = :kd_prodi AND takm.THSMSTRAKM = :tahun`;
 
+const SelectLastAKM = `SELECT 
+                            takm.id,
+                            takm.NIMHSTRAKM npm,
+                            tm.NIMHSMSMHS name,
+                            takm.NLIPSTRAKM ips,
+                            takm.NLIPKTRAKM ipk,
+                            takm.SKSEMTRAKM sks,
+                            takm.SKSTTTRAKM total_sks,
+                            takm.BIAYA biaya 
+                        FROM 
+                            tbl_aktifitas_kuliah_mahasiswa takm 
+                        JOIN tbl_mahasiswa tm ON
+						    tm.NIMHSMSMHS = takm.NIMHSTRAKM
+                        WHERE takm.NIMHSTRAKM = :npm ORDER BY THSMSTRAKM DESC LIMIT 1`;
+
 const SELECT_CUTI = `SELECT
                         a .*,
                         b.NIMHSMSMHS npm,
@@ -76,4 +91,24 @@ const SELECT_DROPOUT = `SELECT
                         AND b.KDPSTMSMHS  = :kd_prodi
                         AND a.status IN('D', 'K', 'W')`;
 
-module.exports = { GetLulusan, SELECT_AKM, SELECT_CUTI, SELECT_DROPOUT };
+const SELECT_AKM_NA = `SELECT
+                    DISTINCT tm.NIMHSMSMHS npm,
+                    tm.NMMHSMSMHS name
+                FROM
+                    tbl_mahasiswa tm
+                WHERE
+                    tm.KDPSTMSMHS = :kd_prodi
+                AND tm.NIMHSMSMHS NOT IN (SELECT npm_mahasiswa FROM tbl_verifikasi_krs tvk WHERE tvk.tahunajaran = :tahun AND kd_jurusan = :kd_prodi )
+                AND tm.NIMHSMSMHS NOT IN (SELECT npm FROM tbl_status_mahasiswa tsm WHERE tsm.tahunajaran = :tahun AND validate = 1 )
+                AND tm.STMHSMSMHS IN ('A', 'N')
+                AND tm.SMAWLMSMHS >= :study_start AND tm.SMAWLMSMHS <= :tahun
+                AND tm.NIMHSMSMHS NOT IN ('201810115011','201810115024','201810115026','201810115076','201810115298') LIMIT 1;`;
+
+module.exports = {
+	GetLulusan,
+	SELECT_AKM,
+	SelectLastAKM,
+	SELECT_CUTI,
+	SELECT_DROPOUT,
+	SELECT_AKM_NA,
+};
