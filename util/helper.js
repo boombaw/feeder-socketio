@@ -4,6 +4,11 @@ const JenisKeluar = {
 	Wafat: 6,
 };
 
+const statusMhs = {
+	aktif: "A",
+	nonAktif: "N",
+};
+
 const studyStart = (tahun) => {
 	tahun = parseInt(tahun);
 	let front = tahun.toString().substr(0, 4);
@@ -22,4 +27,4 @@ const studyStart = (tahun) => {
 	return fix_year;
 };
 
-module.exports = { JenisKeluar, studyStart };
+module.exports = { JenisKeluar, statusMhs, studyStart };

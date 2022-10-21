@@ -53,9 +53,8 @@ const SelectLastAKM = `SELECT
                             takm.BIAYA biaya 
                         FROM 
                             tbl_aktifitas_kuliah_mahasiswa takm 
-                        JOIN tbl_mahasiswa tm ON
-						    tm.NIMHSMSMHS = takm.NIMHSTRAKM
-                        WHERE takm.NIMHSTRAKM = :npm ORDER BY THSMSTRAKM DESC LIMIT 1`;
+                        JOIN tbl_mahasiswa tm ON tm.NIMHSMSMHS = takm.NIMHSTRAKM
+                        WHERE takm.NIMHSTRAKM = :npm ORDER BY THSMSTRAKM DESC`;
 
 const SELECT_CUTI = `SELECT
                         a .*,
