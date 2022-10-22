@@ -47,7 +47,8 @@ class Feeder {
 				.toISOString()
 				.split("T")[0];
 
-			return newDate;
+			return "2022-10-12"; //request kordinator feeder
+			// return newDate;
 		}
 	}
 
