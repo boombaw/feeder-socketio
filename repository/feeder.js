@@ -24,32 +24,32 @@ class Feeder {
 	}
 
 	async tanggalDaftar(no_ujian) {
-		let sqlQuery = `SELECT time_insert tgl_daftar FROM pendaftar p WHERE p.no_ujian  = :no_ujian`;
-		let data = await databaseMaba.query(sqlQuery, {
-			replacements: {
-				no_ujian,
-			},
-			type: databaseMaba.QueryTypes.SELECT,
-			raw: true,
-			plain: true,
-			logging: false,
-		});
+		// let sqlQuery = `SELECT time_insert tgl_daftar FROM pendaftar p WHERE p.no_ujian  = :no_ujian`;
+		// let data = await databaseMaba.query(sqlQuery, {
+		// 	replacements: {
+		// 		no_ujian,
+		// 	},
+		// 	type: databaseMaba.QueryTypes.SELECT,
+		// 	raw: true,
+		// 	plain: true,
+		// 	logging: false,
+		// });
 
-		if (data === null) {
-			return null;
-		} else {
-			let { tgl_daftar } = await data;
+		// if (data === null) {
+		// 	return null;
+		// } else {
+		// 	let { tgl_daftar } = await data;
 
-			var date = new Date(tgl_daftar);
-			var newDate = new Date(
-				date.getTime() - date.getTimezoneOffset() * 60000
-			)
-				.toISOString()
-				.split("T")[0];
+		// 	var date = new Date(tgl_daftar);
+		// 	var newDate = new Date(
+		// 		date.getTime() - date.getTimezoneOffset() * 60000
+		// 	)
+		// 		.toISOString()
+		// 		.split("T")[0];
 
-			return "2022-10-12"; //request kordinator feeder
-			// return newDate;
-		}
+		// 		// return newDate;
+		// 	}
+		return "2022-10-12"; //request kordinator feeder
 	}
 
 	async bayarMaba(kd_prodi, kelasMaba, jalurMaba) {
