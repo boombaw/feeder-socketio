@@ -103,6 +103,97 @@ const SELECT_AKM_NA = `SELECT
                 AND tm.SMAWLMSMHS >= :study_start AND tm.SMAWLMSMHS <= :tahun
                 AND tm.NIMHSMSMHS NOT IN ('201810115011','201810115024','201810115026','201810115076','201810115298') ;`;
 
+const SELECT_MABA_SATUAN = `select
+                                d.KDPSTMSMHS as kode_prodi,
+                                d.SMAWLMSMHS,
+                                d.STMHSMSMHS as status,
+                                a.npm,
+                                d.NMMHSMSMHS as nama,
+                                a.kelas,
+                                a.sex as jk,
+                                a.nisn,
+                                a.ktp as nik,
+                                a.agama,
+                                a.no_kps,
+                                a.nama_ayah,
+                                a.nama_ibu,
+                                a.kewarganegaraan,
+                                a.alamat as jalan,
+                                a.rt,
+                                a.rw,
+                                a.penerima_kps,
+                                a.jenis_tinggal,
+                                a.kebutuhan_khusus_mhs,
+                                (
+                                    select tk.name from tbl_kelurahans tk WHERE tk.id =  a.kelurahan
+                                ) as desa,
+                                (
+                                    SELECT tk.id_wil FROM tbl_kecamatans tk WHERE tk.id = a.kecamatan
+                                ) as kec,
+                                a.kota as kab,
+                                a.provinsi as prov,
+                                a.tpt_lahir,
+                                a.tgl_lahir,
+                                a.email,
+                                a.no_hp,
+                                b.no_ujian,
+                                a.npwp,
+                                a.kode_pos
+                            from
+                                tbl_bio_mhs as a
+                            join
+                                tbl_register as b on a.npm = b.npm
+                            join
+                                tbl_mahasiswa as d on a.npm = d.NIMHSMSMHS
+                            where
+                                substr(a.npm,1,4) = :angkatan 
+                                and a.npm = :npm`;
+
+const SELECT_MABA_PRODI = `select
+                                d.KDPSTMSMHS as kode_prodi,
+                                d.SMAWLMSMHS,
+                                d.STMHSMSMHS as status,
+                                a.npm,
+                                d.NMMHSMSMHS as nama,
+                                a.kelas,
+                                a.sex as jk,
+                                a.nisn,
+                                a.ktp as nik,
+                                a.agama,
+                                a.no_kps,
+                                a.nama_ayah,
+                                a.nama_ibu,
+                                a.kewarganegaraan,
+                                a.alamat as jalan,
+                                a.rt,
+                                a.rw,
+                                a.penerima_kps,
+                                a.jenis_tinggal,
+                                a.kebutuhan_khusus_mhs,
+                                (
+                                    select tk.name from tbl_kelurahans tk WHERE tk.id =  a.kelurahan
+                                ) as desa,
+                                (
+                                    SELECT tk.id_wil FROM tbl_kecamatans tk WHERE tk.id = a.kecamatan
+                                ) as kec,
+                                a.kota as kab,
+                                a.provinsi as prov,
+                                a.tpt_lahir,
+                                a.tgl_lahir,
+                                a.email,
+                                a.no_hp,
+                                b.no_ujian,
+                                a.npwp,
+                                a.kode_pos
+                            from
+                                tbl_bio_mhs as a
+                            join
+                                tbl_register as b on a.npm = b.npm
+                            join
+                                tbl_mahasiswa as d on a.npm = d.NIMHSMSMHS
+                            where
+                                substr(a.npm,1,4) = :angkatan 
+                                and d.KDPSTMSMHS = :kd_prodi`;
 module.exports = {
 	GetLulusan,
 	SELECT_AKM,
@@ -110,4 +201,6 @@ module.exports = {
 	SELECT_CUTI,
 	SELECT_DROPOUT,
 	SELECT_AKM_NA,
+	SELECT_MABA_SATUAN,
+	SELECT_MABA_PRODI,
 };

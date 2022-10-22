@@ -2,6 +2,8 @@ const axios = require("axios");
 const action = require("./commands");
 const redisClient = require("../database/redis/conn");
 
+const config = require("../util/config");
+
 let url = process.env.FEEDER_HOST;
 
 const sendRequest = async (req) => {
@@ -53,6 +55,18 @@ const token = async () => {
 	};
 };
 
+const refreshToken = async () => {
+	const data = await getToken();
+	const { error_code, data: tokenData } = data;
+
+	if (error_code === 0) {
+		const { token } = tokenData;
+		redisClient.setEx("token", 60, token);
+	}
+
+	return data;
+};
+
 const getIdRegistrasiMahasiswa = async (token, npm) => {
 	let req = {
 		act: action.GET_RIWAYAT_PENDIDIKAN_MHS,
@@ -74,7 +88,7 @@ const idRegistrasiMahasiswa = async (token, npm) => {
 
 		const { error_code, data: idRegistrasiData } = data;
 
-		if (error_code === 0) {
+		if (error_code === 0 && data.length > 0) {
 			let { id_registrasi_mahasiswa } = idRegistrasiData[0];
 			redisClient.setEx(keyRedis, 600, id_registrasi_mahasiswa);
 		}
@@ -196,6 +210,70 @@ const insertCutiFeeder = async (token, params) => {
 	return await sendRequest(req);
 };
 
+const getBio = async (token, nik, nama) => {
+	let filter = `nik like '%${nik}%'`;
+	filter += ` and nama_mahasiswa like '%${nama}%'`;
+	let req = {
+		act: action.GET_BIODATA_MHS,
+		token,
+		filter,
+	};
+
+	try {
+		return await sendRequest(req);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+const insertBio = async (token, args) => {
+	let req = {
+		token,
+		act: action.INSERT_BIODATA_MHS,
+		record: args,
+	};
+
+	return await sendRequest(req);
+};
+const updateBio = async (token, id_mahasiswa, args) => {
+	let req = {
+		token,
+		act: action.UPDATE_BIODATA_MHS,
+		key: {
+			id_mahasiswa,
+		},
+		record: args,
+	};
+
+	return await sendRequest(req);
+};
+
+const syncBioMaba = async (token, npm, nama, params) => {
+	const bio = await getBio(token, params.nik, nama);
+
+	let { error_code, error_desc, data } = bio;
+	if (error_code === 0) {
+		if (data.length > 0) {
+			let { id_mahasiswa } = data[0];
+			return await updateBio(token, id_mahasiswa, params);
+		} else {
+			return await insertBio(token, params);
+		}
+	} else {
+		return bio;
+	}
+};
+
+const insertRiwayatPendidikan = async (token, params) => {
+	let req = {
+		token,
+		act: action.INSERT_RIWAYAT_PENDIDIKAN_MHS,
+		record: params,
+	};
+
+	return await sendRequest(req);
+};
+
 module.exports = {
 	token,
 	idRegistrasiMahasiswa,
@@ -207,4 +285,7 @@ module.exports = {
 	insertCutiFeeder,
 	insertDOFeeder,
 	insertNAFeeder,
+	syncBioMaba,
+	refreshToken,
+	insertRiwayatPendidikan,
 };

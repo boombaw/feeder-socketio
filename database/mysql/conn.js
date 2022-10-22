@@ -1,17 +1,16 @@
 const Sequelize = require("sequelize");
+const config = require("../../util/config");
 
-const dbName = process.env.SIA_DB_NAME;
-const dbUser = process.env.SIA_DB_USER;
-const dbHost = process.env.SIA_DB_HOST;
-const dbPass = process.env.SIA_DB_PASS;
-const dbPort = process.env.SIA_DB_PORT;
-const dbDialect = process.env.SIA_DB_DRIVER;
-
-const sequelize = new Sequelize(dbName, dbUser, dbPass, {
-	host: dbHost,
-	dialect: dbDialect,
-	port: dbPort,
-});
+const sequelize = new Sequelize(
+	config.sia.dbName,
+	config.sia.dbUser,
+	config.sia.dbPass,
+	{
+		host: config.sia.dbHost,
+		dialect: config.sia.dbDialect,
+		port: config.sia.dbPort,
+	}
+);
 
 const db = {};
 
@@ -27,4 +26,15 @@ sequelize
 		console.error("Unable to connect to the database: ", error);
 	});
 
-module.exports = db;
+const databaseMaba = new Sequelize(
+	config.peembe.dbName,
+	config.peembe.dbUser,
+	config.peembe.dbPass,
+	{
+		host: config.peembe.dbHost,
+		dialect: config.peembe.dbDialect,
+		port: config.peembe.dbPort,
+	}
+);
+
+module.exports = { db, databaseMaba };

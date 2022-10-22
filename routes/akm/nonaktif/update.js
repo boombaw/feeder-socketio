@@ -132,6 +132,15 @@ updateAKMNA.on("connection", async (socket) => {
 			const { token: tokenFeeder } = dataToken;
 
 			const nonAktifData = await ListNonAktif(kd_prodi, tahun);
+
+			// send total data to client
+			updateAKMNA
+				.to(userId)
+				.emit(
+					"total_update_akm_na_" + kd_prodi,
+					JSON.stringify({ total: akmData.length })
+				);
+
 			for (let i = 0; i < nonAktifData.length; i++) {
 				const { name, npm } = nonAktifData[i];
 				const akm = await LastAKM(npm);
