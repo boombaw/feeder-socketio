@@ -274,6 +274,51 @@ const insertRiwayatPendidikan = async (token, params) => {
 	return await sendRequest(req);
 };
 
+const getMatakuliahFeeder = async (token, kd_matakuliah, id_sms) => {
+	let filter = `id_prodi = '${id_sms}' and kode_mata_kuliah = '${kd_matakuliah}'`;
+
+	let req = {
+		token,
+		filter,
+		act: action.GET_LIST_MATAKULIAH,
+	};
+	return await sendRequest(req);
+};
+
+const syncInsertKelasKuliah = async (token, params) => {
+	let req = {
+		token,
+		act: action.INSERT_KELAS,
+		record: params,
+	};
+
+	return await sendRequest(req);
+};
+
+const syncUpdateKelasKuliah = async (token, params, key) => {
+	let req = {
+		token,
+		key,
+		act: action.UPDATE_KELAS,
+		record: params,
+	};
+
+	return await sendRequest(req);
+};
+
+const getListKelas = async (token, args) => {
+	let filter = `kode_mata_kuliah = '${args.kode_mata_kuliah}' and nama_kelas_kuliah = '${args.nama_kelas_kuliah}' and id_prodi = '${args.sms}'`;
+	filter += ` and id_semester = '${args.tahun}'`;
+
+	let req = {
+		token,
+		act: action.GET_DETAIL_KELAS,
+		filter,
+	};
+
+	return await sendRequest(req);
+};
+
 module.exports = {
 	token,
 	idRegistrasiMahasiswa,
@@ -288,4 +333,8 @@ module.exports = {
 	syncBioMaba,
 	refreshToken,
 	insertRiwayatPendidikan,
+	getMatakuliahFeeder,
+	getListKelas,
+	syncInsertKelasKuliah,
+	syncUpdateKelasKuliah,
 };

@@ -12,6 +12,7 @@ const actionFeeder = {
 	INSERT_KELAS: "InsertKelasKuliah",
 	UPDATE_KELAS: "UpdateKelasKuliah",
 	GET_LIST_KELAS: "GetListKelasKuliah",
+	GET_DETAIL_KELAS: "GetDetailKelasKuliah",
 	GET_PESERTA_KELAS: "GetPesertaKelasKuliah",
 	INSERT_PESERTA_KELAS: "InsertPesertaKelasKuliah",
 	UPDATE_NILAI_KELAS: "UpdateNilaiPerkuliahanKelas",

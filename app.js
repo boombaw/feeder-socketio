@@ -7,6 +7,8 @@ require("./routes/akm"); // akm -> [update akm, insert akm]
 require("./routes/cuti"); // cuti -> [insert akm]
 require("./routes/dropout"); // dropout -> [insert dropout, update dropout]
 require("./routes/maba");
+require("./routes/kelas");
+// require("./routes/ajar_dosen");
 
 app.use(cors);
 
