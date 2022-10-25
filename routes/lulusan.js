@@ -1,6 +1,9 @@
 const { io } = require("../websocket");
-const db = require("../database/mysql/conn");
+const { db } = require("../database/mysql/conn");
 const { GetLulusan } = require("../database/query/query");
+const LulusanRepo = require("../repository/lulusan");
+
+const repoLulusan = new LulusanRepo();
 
 const {
 	token,
@@ -146,6 +149,7 @@ async function sendResponse(index, npm, name, params) {
 	};
 
 	if (error_code == 0) {
+		await repoLulusan.updateStatusSync(npm);
 		response.list = {
 			order: index,
 			npm: npm,

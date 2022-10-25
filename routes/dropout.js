@@ -1,5 +1,5 @@
 const { io } = require("../websocket");
-const db = require("../database/mysql/conn");
+const { db } = require("../database/mysql/conn");
 const { SELECT_DROPOUT } = require("../database/query/query");
 
 require("../util/helper");

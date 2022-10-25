@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const { io } = require("../../../websocket");
-const db = require("../../../database/mysql/conn");
+const { db } = require("../../../database/mysql/conn");
 
 const {
 	token,
