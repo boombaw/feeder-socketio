@@ -73,108 +73,117 @@ allKelas.on("connection", async (socket) => {
 
 					if (error_code === 0) {
 						let mkFeeder = data[0];
-						let { id_matkul, nama_mata_kuliah } = mkFeeder;
 
-						let args = {
-							id_matkul,
-							tanggal_mulai_efektif,
-							tanggal_akhir_efektif,
-							id_prodi: sms,
-							id_semester: tahun,
-							nama_kelas_kuliah: kelas
-								.replace(/\s/g, "")
-								.substr(0, 5),
-							lingkup: lingkup_kelas,
-							mode: mode_kuliah,
-						};
+						try {
+							let { id_matkul, nama_mata_kuliah } = mkFeeder;
 
-						const listKelasFeeder = await getListKelas(
-							tokenFeeder,
-							{
-								kode_mata_kuliah,
+							let args = {
+								id_matkul,
+								tanggal_mulai_efektif,
+								tanggal_akhir_efektif,
+								id_prodi: sms,
+								id_semester: tahun,
 								nama_kelas_kuliah: kelas
 									.replace(/\s/g, "")
 									.substr(0, 5),
-								sms,
-								tahun,
-							}
-						);
-
-						({ error_code, error_desc, data } = listKelasFeeder);
-
-						let response = {};
-						let matkul = `${nama_mata_kuliah} (${kd_matakuliah})`;
-						response.list = {
-							matkul,
-							kelas,
-							randID,
-							order: i + 1,
-						};
-
-						let keyRedis = `kelas_${sms}_${kd_jadwal}`;
-
-						if (error_code === 0 && data.length > 0) {
-							let { id_kelas_kuliah } = data[0];
-
-							// set redis
-							// 259200 = 3 hari
-							await redisClient.setEx(
-								keyRedis,
-								259200,
-								id_kelas_kuliah
-							);
-
-							let key = {
-								id_kelas_kuliah,
+								lingkup: lingkup_kelas,
+								mode: mode_kuliah,
 							};
 
-							const respUpdateKelas = await syncUpdateKelasKuliah(
+							const listKelasFeeder = await getListKelas(
 								tokenFeeder,
-								args,
-								key
+								{
+									kode_mata_kuliah,
+									nama_kelas_kuliah: kelas
+										.replace(/\s/g, "")
+										.substr(0, 5),
+									sms,
+									tahun,
+								}
 							);
 
 							({ error_code, error_desc, data } =
-								respUpdateKelas);
-							if (error_code === 0) {
-								await repoKelas.updateJadwal(
-									kd_jadwal,
+								listKelasFeeder);
+
+							let response = {};
+							let matkul = `${nama_mata_kuliah} (${kd_matakuliah})`;
+							response.list = {
+								matkul,
+								kelas,
+								randID,
+								order: i + 1,
+							};
+
+							let keyRedis = `kelas_${sms}_${kd_jadwal}`;
+
+							if (error_code === 0 && data.length > 0) {
+								let { id_kelas_kuliah } = data[0];
+
+								// set redis
+								// 259200 = 3 hari
+								await redisClient.setEx(
+									keyRedis,
+									259200,
 									id_kelas_kuliah
 								);
-								response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+
+								let key = {
+									id_kelas_kuliah,
+								};
+
+								const respUpdateKelas =
+									await syncUpdateKelasKuliah(
+										tokenFeeder,
+										args,
+										key
+									);
+
+								({ error_code, error_desc, data } =
+									respUpdateKelas);
+								if (error_code === 0) {
+									await repoKelas.updateJadwal(
+										kd_jadwal,
+										id_kelas_kuliah
+									);
+									response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+								} else {
+									response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+								}
 							} else {
-								response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
-							}
-						} else {
-							const respKelasKuliah = await syncInsertKelasKuliah(
-								tokenFeeder,
-								args
-							);
-							({ error_code, error_desc, data } =
-								respKelasKuliah);
-							let { id_kelas_kuliah } = data;
+								const respKelasKuliah =
+									await syncInsertKelasKuliah(
+										tokenFeeder,
+										args
+									);
+								({ error_code, error_desc, data } =
+									respKelasKuliah);
+								let { id_kelas_kuliah } = data;
 
-							// set redis
-							// 259200 = 3 hari
-							await redisClient.setEx(
-								keyRedis,
-								259200,
-								id_kelas_kuliah
-							);
-
-							if (error_code === 0) {
-								await repoKelas.updateJadwal(
-									kd_jadwal,
+								// set redis
+								// 259200 = 3 hari
+								await redisClient.setEx(
+									keyRedis,
+									259200,
 									id_kelas_kuliah
 								);
-								response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
-							} else {
-								response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+
+								if (error_code === 0) {
+									await repoKelas.updateJadwal(
+										kd_jadwal,
+										id_kelas_kuliah
+									);
+									response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+								} else {
+									response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+								}
 							}
+
+							response.error_code = error_code;
+							response.error_desc = error_desc;
+						} catch {
+							response.error_code = error_code;
+							response.error_desc = `Periksa kembali kode matakuliah dan kelas yang anda masukkan - ${kode_mata_kuliah} - ${kelas}`;
 						}
-
-						response.error_code = error_code;
-						response.error_desc = error_desc;
 
 						allKelas.emit(eventName, JSON.stringify(response));
 					} else {
