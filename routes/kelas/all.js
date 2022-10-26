@@ -110,8 +110,18 @@ allKelas.on("connection", async (socket) => {
 							order: i + 1,
 						};
 
+						let keyRedis = `kelas_${sms}_${kd_jadwal}`;
+
 						if (error_code === 0 && data.length > 0) {
 							let { id_kelas_kuliah } = data[0];
+
+							// set redis
+							// 259200 = 3 hari
+							await redisClient.setEx(
+								keyRedis,
+								259200,
+								id_kelas_kuliah
+							);
 
 							let key = {
 								id_kelas_kuliah,
@@ -142,6 +152,14 @@ allKelas.on("connection", async (socket) => {
 							({ error_code, error_desc, data } =
 								respKelasKuliah);
 							let { id_kelas_kuliah } = data;
+
+							// set redis
+							// 259200 = 3 hari
+							await redisClient.setEx(
+								keyRedis,
+								259200,
+								id_kelas_kuliah
+							);
 
 							if (error_code === 0) {
 								await repoKelas.updateJadwal(

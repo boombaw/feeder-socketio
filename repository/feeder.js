@@ -165,6 +165,32 @@ class Feeder {
 			return data;
 		}
 	}
+
+	async smsProdi(kd_prodi) {
+		let sqlQuery = `SELECT
+							id_sms
+						FROM
+							tbl_jurusan_prodi
+						WHERE
+							kd_prodi = :kd_prodi`;
+
+		let data = await databaseMaba.query(sqlQuery, {
+			replacements: {
+				kd_prodi,
+			},
+			type: databaseMaba.QueryTypes.SELECT,
+			raw: true,
+			plain: true,
+			logging: false,
+		});
+
+		if (data === null) {
+			return 0;
+		} else {
+			let { id_sms } = await data;
+			return id_sms;
+		}
+	}
 }
 
 module.exports = Feeder;

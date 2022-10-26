@@ -122,6 +122,45 @@ class Kelas {
 			await t.rollback();
 		}
 	}
+
+	async getPesertaKelas(kd_jadwal) {
+		let sqlQuery = `SELECT
+                            a.npm_mahasiswa,
+                            c.NMMHSMSMHS AS nama,
+                            a.kd_matakuliah,
+                            c.KDPSTMSMHS as prodi,
+                            a.kd_matakuliah,
+                            tjm.kelas,
+                            tmn.nama_matakuliah,
+                            nid_to_nama_dosen(tjm.kd_dosen) as nama_dosen
+                        FROM
+                            tbl_krs AS a
+                        JOIN
+                            tbl_verifikasi_krs AS b
+                        ON
+                            a.kd_krs = b.kd_krs
+                        JOIN tbl_jadwal_matkul tjm on tjm.kd_jadwal = a.kd_jadwal
+                        JOIN tbl_matakuliah_neww tmn on tmn.id_matakuliah = tjm.id_matakuliah
+                        LEFT JOIN
+                            tbl_mahasiswa AS c
+                        ON
+                            a.npm_mahasiswa = c.NIMHSMSMHS
+                        WHERE
+                            a.kd_jadwal = :kd_jadwal
+                        GROUP BY
+                            a.kd_krs LIMIT 5`;
+
+		const data = await db.sequelize.query(sqlQuery, {
+			replacements: {
+				kd_jadwal,
+			},
+			type: db.sequelize.QueryTypes.SELECT,
+			logging: false,
+			// plain: true,
+		});
+
+		return data;
+	}
 }
 
 module.exports = Kelas;

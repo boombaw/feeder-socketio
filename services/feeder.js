@@ -43,7 +43,7 @@ const token = async () => {
 
 		if (error_code === 0) {
 			const { token } = tokenData;
-			redisClient.setEx("token", 60, token);
+			redisClient.setEx("token", 50, token);
 		}
 
 		return data;
@@ -319,6 +319,57 @@ const getListKelas = async (token, args) => {
 	return await sendRequest(req);
 };
 
+const getListKelasCahe = async (token, args) => {
+	let keyRedis = `kelas_${args.sms}_${args.kd_jadwal}`;
+
+	let id_kelas_kuliah = await redisClient.get(keyRedis);
+	if (id_kelas_kuliah === null) {
+		let filter = `kode_mata_kuliah = '${args.kode_mata_kuliah}' and nama_kelas_kuliah = '${args.nama_kelas_kuliah}' and id_prodi = '${args.sms}'`;
+		filter += ` and id_semester = '${args.tahun}'`;
+
+		let req = {
+			token,
+			act: action.GET_DETAIL_KELAS,
+			filter,
+		};
+
+		const data = await sendRequest(req);
+
+		let { error_code, error_desc, data: list } = data;
+
+		if (error_code !== 0) {
+			return null;
+		} else {
+			// set redis
+			// 259200 = 3 hari
+			let { id_kelas_kuliah } = list[0];
+			const [setKeyReply] = await redisClient
+				.multi()
+				.setEx(keyRedis, 259200, id_kelas_kuliah)
+				.get(keyRedis)
+				.exec();
+
+			if (setKeyReply === "OK") {
+				return id_kelas_kuliah;
+			} else {
+				return null;
+			}
+		}
+	} else {
+		return id_kelas_kuliah;
+	}
+};
+
+const insertPesertaKelas = async (token, args) => {
+	let req = {
+		token,
+		act: action.INSERT_PESERTA_KELAS,
+		record: args,
+	};
+
+	return await sendRequest(req);
+};
+
 module.exports = {
 	token,
 	idRegistrasiMahasiswa,
@@ -337,4 +388,6 @@ module.exports = {
 	getListKelas,
 	syncInsertKelasKuliah,
 	syncUpdateKelasKuliah,
+	insertPesertaKelas,
+	getListKelasCahe,
 };
