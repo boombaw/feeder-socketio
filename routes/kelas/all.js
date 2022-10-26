@@ -1,4 +1,5 @@
 const { io } = require("../../websocket");
+const redisClient = require("../../database/redis/conn");
 const Kelas = require("../../repository/kelas");
 const {
 	getMatakuliahFeeder,

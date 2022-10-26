@@ -6,6 +6,7 @@ const {
 	token,
 	idRegistrasiMahasiswa,
 	updateAkmFeeder,
+	insertAkmFeeder,
 } = require("../../../services/feeder");
 const { statusMhs } = require("../../../util/helper");
 
