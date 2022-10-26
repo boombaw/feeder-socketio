@@ -57,6 +57,7 @@ allKelas.on("connection", async (socket) => {
 						lingkup_kelas,
 						mode_kuliah,
 						kd_jadwal,
+						nama_matakuliah,
 					} = listJadwal[i];
 
 					let kode_mata_kuliah = kd_matakuliah
@@ -185,7 +186,7 @@ allKelas.on("connection", async (socket) => {
 								.emit(eventName, JSON.stringify(response));
 						} catch {
 							let response = {};
-							let matkul = `${nama_mata_kuliah} (${kd_matakuliah})`;
+							let matkul = `${nama_matakuliah} (${kd_matakuliah})`;
 							response.list = {
 								matkul,
 								kelas,
