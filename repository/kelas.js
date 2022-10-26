@@ -148,7 +148,7 @@ class Kelas {
                         WHERE
                             a.kd_jadwal = :kd_jadwal
                         GROUP BY
-                            a.kd_krs LIMIT 5`;
+                            a.kd_krs`;
 
 		const data = await db.sequelize.query(sqlQuery, {
 			replacements: {
