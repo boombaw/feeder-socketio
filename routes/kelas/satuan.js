@@ -205,7 +205,7 @@ skelas.on("connection", async (socket) => {
 						response.list = {
 							matkul,
 							kelas,
-							randID,
+							kd_jadwal,
 							order: 1,
 						};
 
