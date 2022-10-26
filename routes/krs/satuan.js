@@ -78,7 +78,7 @@ skrs.on("connection", async (socket) => {
 
 						({ error_code, error_desc, data } = idReg);
 
-						if (error_code === 0) {
+						if (error_code === 0 && data.length > 0) {
 							let { id_registrasi_mahasiswa } = data.shift();
 
 							let args = {
@@ -113,6 +113,10 @@ skrs.on("connection", async (socket) => {
 								};
 							}
 						} else {
+							if (data.length === 0) {
+								error_desc = "Mahasiswa tidak terdaftar";
+							}
+
 							response.list = {
 								npm: row.npm_mahasiswa,
 								nama: row.nama,
