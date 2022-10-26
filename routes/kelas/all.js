@@ -74,6 +74,7 @@ allKelas.on("connection", async (socket) => {
 					if (error_code === 0) {
 						let mkFeeder = data[0];
 
+						let matkul = `${nama_mata_kuliah} (${kd_matakuliah})`;
 						try {
 							let { id_matkul, nama_mata_kuliah } = mkFeeder;
 
@@ -106,7 +107,6 @@ allKelas.on("connection", async (socket) => {
 								listKelasFeeder);
 
 							let response = {};
-							let matkul = `${nama_mata_kuliah} (${kd_matakuliah})`;
 							response.list = {
 								matkul,
 								kelas,
@@ -180,12 +180,26 @@ allKelas.on("connection", async (socket) => {
 
 							response.error_code = error_code;
 							response.error_desc = error_desc;
+							allKelas
+								.to(userId)
+								.emit(eventName, JSON.stringify(response));
 						} catch {
+							let response = {};
+							let matkul = `${nama_mata_kuliah} (${kd_matakuliah})`;
+							response.list = {
+								matkul,
+								kelas,
+								randID,
+								order: i + 1,
+							};
+
 							response.error_code = error_code;
 							response.error_desc = `Periksa kembali kode matakuliah dan kelas yang anda masukkan - ${kode_mata_kuliah} - ${kelas}`;
-						}
 
-						allKelas.emit(eventName, JSON.stringify(response));
+							allKelas
+								.to(userId)
+								.emit(eventName, JSON.stringify(response));
+						}
 					} else {
 						allKelas
 							.to(userId)
