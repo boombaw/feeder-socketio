@@ -138,7 +138,7 @@ updateAKMNA.on("connection", async (socket) => {
 				.to(userId)
 				.emit(
 					"total_update_akm_na_" + kd_prodi,
-					JSON.stringify({ total: akmData.length })
+					JSON.stringify({ total: nonAktifData.length })
 				);
 
 			for (let i = 0; i < nonAktifData.length; i++) {
