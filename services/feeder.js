@@ -2,8 +2,6 @@ const axios = require("axios");
 const action = require("./commands");
 const redisClient = require("../database/redis/conn");
 
-const config = require("../util/config");
-
 let url = process.env.FEEDER_HOST;
 
 const sendRequest = async (req) => {
@@ -104,14 +102,21 @@ const idRegistrasiDosen = async (token, args) => {
 };
 
 const getIdRegistrasiMahasiswa = async (token, npm) => {
-	let req = {
-		act: action.GET_RIWAYAT_PENDIDIKAN_MHS,
-		token,
-		filter: `nim ~* '${npm}' order by id_periode_masuk desc`,
-		limit: 1,
-	};
-
-	return await sendRequest(req);
+	try {
+		let req = {
+			act: action.GET_RIWAYAT_PENDIDIKAN_MHS,
+			token,
+			filter: `nim ~* '${npm}' order by id_periode_masuk desc`,
+			limit: 1,
+		};
+		return await sendRequest(req);
+	} catch (error) {
+		return {
+			error_code: 5,
+			error_desc: error.message,
+			data: [],
+		};
+	}
 };
 
 const idRegistrasiMahasiswa = async (token, npm) => {
@@ -451,6 +456,25 @@ const UpdateDosenPengajar = async (token, record, key) => {
 	return await sendRequest(req);
 };
 
+const UpdateNilaiPerkuliahan = async (token, record, key) => {
+	try {
+		let req = {
+			token,
+			act: action.UPDATE_NILAI_KELAS,
+			key,
+			record,
+		};
+
+		return await sendRequest(req);
+	} catch (error) {
+		return {
+			error_code: 5,
+			error_desc: error.message,
+			data: [],
+		};
+	}
+};
+
 module.exports = {
 	token,
 	idRegistrasiMahasiswa,
@@ -476,4 +500,5 @@ module.exports = {
 	getDosenPengajar,
 	InsertDosenPengajar,
 	UpdateDosenPengajar,
+	UpdateNilaiPerkuliahan,
 };

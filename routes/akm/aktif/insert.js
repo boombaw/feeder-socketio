@@ -115,45 +115,68 @@ async function insertAKMAktif(
 		npm
 	);
 
-	if (error_code == 0) {
-		// get id registrasi mahasiswa from feeder
-		let { id_registrasi_mahasiswa } = data.shift();
+	if (error_code === 0) {
+		try {
+			// get id registrasi mahasiswa from feeder
+			let { id_registrasi_mahasiswa } = data[0];
 
-		ips = parseFloat(ips).toFixed(2);
-		ipk = parseFloat(ipk).toFixed(2);
-		sks = parseFloat(sks);
-		total_sks = parseFloat(total_sks);
-		biaya = parseInt(biaya);
+			ips = parseFloat(ips).toFixed(2);
+			ipk = parseFloat(ipk).toFixed(2);
+			sks = parseFloat(sks);
+			total_sks = parseFloat(total_sks);
+			biaya = parseInt(biaya);
 
-		let arg = {
-			ips,
-			ipk,
-			sks,
-			total_sks,
-			sks,
-			biaya,
-			id_registrasi_mahasiswa,
-			id_status_mahasiswa: statusMhs.aktif,
-			semester,
-		};
-
-		// update akm to feeder
-		({ error_code, error_desc, data } = await insertAkmFeeder(token, arg));
-
-		if (error_code == 0) {
-			response.list = {
-				order: index,
-				npm: npm,
-				name: name,
-				status: `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`,
+			let arg = {
+				ips,
+				ipk,
+				sks,
+				total_sks,
+				sks,
+				biaya,
+				id_registrasi_mahasiswa,
+				id_status_mahasiswa: statusMhs.aktif,
+				semester,
 			};
-		} else {
+
+			// update akm to feeder
+			({ error_code, error_desc, data } = await insertAkmFeeder(
+				token,
+				arg
+			));
+
+			if (error_code == 0) {
+				response.list = {
+					order: index,
+					npm: npm,
+					name: name,
+					status: `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`,
+				};
+			} else {
+				response.list = {
+					order: index,
+					npm: npm,
+					name: name,
+					status: `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`,
+				};
+			}
+		} catch (error) {
+			let errMessage = "";
+			if (error instanceof SyntaxError) {
+				errMessage = error.message;
+			} else if (error instanceof ReferenceError) {
+				errMessage = error.message;
+			} else {
+				errMessage = error.stack;
+			}
+
 			response.list = {
 				order: index,
 				npm: npm,
 				name: name,
 				status: `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`,
 			};
+
+			error_desc = "Data mahasiswa tidak ditemukan";
 		}
 	}
 
