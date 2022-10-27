@@ -18,7 +18,7 @@ skelas.on("connection", async (socket) => {
 
 	let eventName = "sync-kelas-satuan";
 	socket.on(eventName, async (params) => {
-		let { kd_prodi, tahun, sms } = JSON.parse(params);
+		let { kd_prodi, tahun, sms, randomID } = JSON.parse(params);
 
 		const listKelas = await repoKelas.getJadwalByKdJadwal(
 			kd_jadwal,
@@ -42,7 +42,7 @@ skelas.on("connection", async (socket) => {
 				skelas
 					.to(userId)
 					.emit(
-						"total_kelas_satuan_" + kd_jadwal,
+						"total_kelas_satuan_" + randomID,
 						JSON.stringify({ total: listKelas.length })
 					);
 
