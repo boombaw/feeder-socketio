@@ -75,7 +75,7 @@ allKelas.on("connection", async (socket) => {
 					if (error_code === 0) {
 						let mkFeeder = data[0];
 
-						let matkul = `${nama_mata_kuliah} (${kd_matakuliah})`;
+						let matkul = `${nama_matakuliah} (${kd_matakuliah})`;
 						try {
 							let { id_matkul, nama_mata_kuliah } = mkFeeder;
 
