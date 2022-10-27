@@ -67,6 +67,42 @@ const refreshToken = async () => {
 	return data;
 };
 
+const getIdRegistrasiDosen = async (token, args) => {
+	let filter = `id_dosen = '${args.id_dosen.trim()}' and id_tahun_ajaran ='${args.tahun.substring(
+		0,
+		4
+	)}' order by id_tahun_ajaran desc`;
+
+	let req = {
+		token,
+		act: action.GET_PENUGASAN_DOSEN,
+		filter,
+	};
+
+	return await sendRequest(req);
+};
+
+const idRegistrasiDosen = async (token, args) => {
+	let keyRedis = `id_registrasi_dosen_${args.id_dosen}_${args.tahun}`;
+	const idRegis = await redisClient.get(keyRedis);
+
+	if (idRegis === null) {
+		const data = await getIdRegistrasiDosen(token, args);
+
+		const { error_code, data: idRegistrasiData } = data;
+
+		if (error_code === 0 && idRegistrasiData.length > 0) {
+			let { id_registrasi_dosen } = idRegistrasiData[0];
+			redisClient.setEx(keyRedis, 600, id_registrasi_dosen);
+			return id_registrasi_dosen;
+		}
+
+		return null;
+	} else {
+		return idRegis;
+	}
+};
+
 const getIdRegistrasiMahasiswa = async (token, npm) => {
 	let req = {
 		act: action.GET_RIWAYAT_PENDIDIKAN_MHS,
@@ -336,22 +372,25 @@ const getListKelasCahe = async (token, args) => {
 		const data = await sendRequest(req);
 
 		let { error_code, error_desc, data: list } = data;
-
 		if (error_code !== 0) {
 			return null;
 		} else {
 			// set redis
 			// 259200 = 3 hari
-			let { id_kelas_kuliah } = list[0];
-			const [setKeyReply] = await redisClient
-				.multi()
-				.setEx(keyRedis, 259200, id_kelas_kuliah)
-				.get(keyRedis)
-				.exec();
+			try {
+				let { id_kelas_kuliah } = list[0];
+				const [setKeyReply] = await redisClient
+					.multi()
+					.setEx(keyRedis, 259200, id_kelas_kuliah)
+					.get(keyRedis)
+					.exec();
 
-			if (setKeyReply === "OK") {
-				return id_kelas_kuliah;
-			} else {
+				if (setKeyReply === "OK") {
+					return id_kelas_kuliah;
+				} else {
+					return null;
+				}
+			} catch (error) {
 				return null;
 			}
 		}
@@ -365,6 +404,48 @@ const insertPesertaKelas = async (token, args) => {
 		token,
 		act: action.INSERT_PESERTA_KELAS,
 		record: args,
+	};
+
+	return await sendRequest(req);
+};
+
+const getIDDosen = async (token, args) => {
+	let filter = `nidn = '${args.nidn.replace(/\s/g, "")}'`;
+	let req = {
+		token,
+		act: action.GET_LIST_DOSEN,
+		filter,
+	};
+
+	return await sendRequest(req);
+};
+
+const getDosenPengajar = async (token, params) => {
+	let req = {
+		token,
+		act: action.GET_DOSEN_PENGAJAR,
+		filter: `id_kelas_kuliah = '${params.id_kelas_kuliah}' and id_registrasi_dosen = '${params.id_registrasi_dosen}'`,
+	};
+
+	return await sendRequest(req);
+};
+
+const InsertDosenPengajar = async (token, record) => {
+	let req = {
+		token: token,
+		act: action.INSERT_DOSEN_PENGAJAR,
+		record,
+	};
+
+	return await sendRequest(req);
+};
+
+const UpdateDosenPengajar = async (token, record, key) => {
+	let req = {
+		token,
+		act: action.UPDATE_DOSEN_PENGAJAR,
+		key,
+		record,
 	};
 
 	return await sendRequest(req);
@@ -390,4 +471,9 @@ module.exports = {
 	syncUpdateKelasKuliah,
 	insertPesertaKelas,
 	getListKelasCahe,
+	getIDDosen,
+	idRegistrasiDosen,
+	getDosenPengajar,
+	InsertDosenPengajar,
+	UpdateDosenPengajar,
 };

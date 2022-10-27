@@ -9,7 +9,7 @@ require("./routes/dropout"); // dropout -> [insert dropout, update dropout]
 require("./routes/maba");
 require("./routes/kelas");
 require("./routes/krs");
-// require("./routes/ajar_dosen");
+require("./routes/ajar_dosen");
 
 app.use(cors);
 

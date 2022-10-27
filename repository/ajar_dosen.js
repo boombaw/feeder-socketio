@@ -11,23 +11,25 @@ class AjarDosen {
                             tbd.nama ,
                             tbd.nidk ,
                             tjm.kd_jadwal ,
+							tm.nama_matakuliah,
                             tjm.kd_matakuliah ,
                             tjm.kelas ,
                             tjm.kd_tahunajaran,
-                            tm.sks_matakuliah
+                            tm.sks_matakuliah,
+							tjm.id_kelas_kuliah_feeder as id_kelas_kuliah
                         FROM
                             tbl_jadwal_matkul tjm
-                            join tbl_matakuliah tm on tm.id_matakuliah = tjm.id_matakuliah
+                            join tbl_matakuliah_neww tm on tm.id_matakuliah = tjm.id_matakuliah
                             JOIN tbl_biodata_dosen tbd ON tbd.nid = tjm.kd_dosen
                         WHERE
                             tjm.kd_jadwal = :kd_jadwal `;
-		let data = await databaseMaba.query(sqlQuery, {
+		let data = await db.sequelize.query(sqlQuery, {
 			replacements: {
 				kd_jadwal,
 			},
-			type: databaseMaba.QueryTypes.SELECT,
+			type: db.sequelize.QueryTypes.SELECT,
 			raw: true,
-			plain: true,
+			// plain: true,
 			logging: false,
 		});
 
