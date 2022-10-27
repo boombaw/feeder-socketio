@@ -10,6 +10,7 @@ require("./routes/maba");
 require("./routes/kelas");
 require("./routes/krs");
 require("./routes/ajar_dosen");
+require("./routes/nilai");
 
 app.use(cors);
 
