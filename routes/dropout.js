@@ -112,7 +112,7 @@ async function insertDO(token, index, params) {
 				case 2: // Dikeluarkan
 					jenis_keluar = JenisKeluar.Dikeluarkan;
 					break;
-				case "1": // mengundurkan diri
+				case 1: // mengundurkan diri
 					jenis_keluar = JenisKeluar.MengundurkanDiri;
 					break;
 				case 3: // wafat
