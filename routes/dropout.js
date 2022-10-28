@@ -10,7 +10,7 @@ const {
 	insertDOFeeder,
 	getLastAKMFeeder,
 } = require("../services/feeder");
-const JenisKeluar = require("../util/helper");
+const { JenisKeluar } = require("../util/helper");
 
 const updateDropout = io.of("/update-dropout");
 const insertDropout = io.of("/insert-dropout");
@@ -112,7 +112,7 @@ async function insertDO(token, index, params) {
 				case 2: // Dikeluarkan
 					jenis_keluar = JenisKeluar.Dikeluarkan;
 					break;
-				case 1: // mengundurkan diri
+				case "1": // mengundurkan diri
 					jenis_keluar = JenisKeluar.MengundurkanDiri;
 					break;
 				case 3: // wafat
@@ -136,7 +136,7 @@ async function insertDO(token, index, params) {
 				args
 			));
 
-			if (error_code == 0) {
+			if (error_code === 0) {
 				response.list = {
 					order: index,
 					npm: params.npm,
