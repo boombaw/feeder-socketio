@@ -107,7 +107,7 @@ async function insertDO(token, index, params) {
 		if (error_code == 0) {
 			let { id_registrasi_mahasiswa, ipk } = data.shift();
 
-			let jenis_keluar = JenisKeluar.Dikeluarkan;
+			let jenis_keluar = null;
 			switch (params.alasan) {
 				case 2: // Dikeluarkan
 					jenis_keluar = JenisKeluar.Dikeluarkan;
@@ -131,19 +131,28 @@ async function insertDO(token, index, params) {
 				id_periode_keluar: params.tahunajaran,
 			};
 
-			({ error_code, error_desc, data } = await insertDOFeeder(
-				token,
-				args
-			));
+			try {
+				({ error_code, error_desc, data } = await insertDOFeeder(
+					token,
+					args
+				));
 
-			if (error_code === 0) {
-				response.list = {
-					order: index,
-					npm: params.npm,
-					name: params.name,
-					status: `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`,
-				};
-			} else {
+				if (error_code === 0) {
+					response.list = {
+						order: index,
+						npm: params.npm,
+						name: params.name,
+						status: `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`,
+					};
+				} else {
+					response.list = {
+						order: index,
+						npm: params.npm,
+						name: params.name,
+						status: `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`,
+					};
+				}
+			} catch (error) {
 				response.list = {
 					order: index,
 					npm: params.npm,
