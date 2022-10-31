@@ -58,6 +58,7 @@ allKelas.on("connection", async (socket) => {
 						mode_kuliah,
 						kd_jadwal,
 						nama_matakuliah,
+						sks_matakuliah,
 					} = listJadwal[i];
 
 					let kode_mata_kuliah = kd_matakuliah
@@ -90,6 +91,7 @@ allKelas.on("connection", async (socket) => {
 									.substr(0, 5),
 								lingkup: lingkup_kelas,
 								mode: mode_kuliah,
+								sks_mata_kuliah:sks_matakuliah,
 							};
 
 							const listKelasFeeder = await getListKelas(

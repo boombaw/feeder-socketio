@@ -54,6 +54,7 @@ skelas.on("connection", async (socket) => {
 					lingkup_kelas,
 					mode_kuliah,
 					nama_matakuliah,
+					sks_matakuliah,
 				} = listKelas[0];
 
 				let kode_mata_kuliah = kd_matakuliah
@@ -83,6 +84,7 @@ skelas.on("connection", async (socket) => {
 
 						let args = {
 							id_matkul,
+							sks_mata_kuliah:sks_matakuliah,
 							tanggal_mulai_efektif,
 							tanggal_akhir_efektif,
 							id_prodi: sms,
