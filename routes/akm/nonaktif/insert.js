@@ -133,7 +133,7 @@ insertAKMNA.on("connection", async (socket) => {
 		let { error_code, error_desc, data: dataToken } = feederToken;
 
 		if (error_code === 0) {
-			const { tokenFeeder } = dataToken;
+			const { token:tokenFeeder } = dataToken;
 			const naData = await ListNonAktif(kd_prodi, tahun);
 
 			// send total data to client

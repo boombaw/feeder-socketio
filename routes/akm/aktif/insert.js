@@ -28,7 +28,7 @@ insertAKM.on("connection", async (socket) => {
 
 		({ error_code, error_desc, data } = feederToken);
 		if (error_code == 0) {
-			let { token } = data;
+			let { token:tokenFeeder } = data;
 			let akmData = await ListAKM(kd_prodi, tahun);
 
 			// send total data to client
@@ -51,7 +51,7 @@ insertAKM.on("connection", async (socket) => {
 					sks,
 					total_sks,
 					biaya,
-					token,
+					tokenFeeder,
 					i + 1
 				);
 

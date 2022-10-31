@@ -10,7 +10,8 @@ const redisClient = redis.createClient({
 	},
 	username: config.redis.username,
 	password: config.redis.password,
-	database: process.env.NODE_ENV === "production" ? 0 : 9,
+	database: 0,
+	// database: process.env.NODE_ENV === "production" ? 0 : 9,
 });
 // const redisClient = redis.createClient({ url: url });
 
