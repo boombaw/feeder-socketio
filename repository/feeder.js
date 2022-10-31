@@ -49,7 +49,7 @@ class Feeder {
 
 		// 		// return newDate;
 		// 	}
-		return "2022-10-12"; //request kordinator feeder
+		return "2022-09-12"; //request kordinator feeder
 	}
 
 	async bayarMaba(kd_prodi, kelasMaba, jalurMaba) {
