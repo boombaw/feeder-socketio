@@ -85,6 +85,7 @@ skelas.on("connection", async (socket) => {
 						let args = {
 							id_matkul,
 							sks_mata_kuliah:sks_matakuliah,
+							sks_tatap_muka:sks_matakuliah,
 							tanggal_mulai_efektif,
 							tanggal_akhir_efektif,
 							id_prodi: sms,

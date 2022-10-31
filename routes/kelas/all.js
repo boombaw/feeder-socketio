@@ -92,6 +92,7 @@ allKelas.on("connection", async (socket) => {
 								lingkup: lingkup_kelas,
 								mode: mode_kuliah,
 								sks_mata_kuliah:sks_matakuliah,
+								sks_tatap_muka:sks_matakuliah,
 							};
 
 							const listKelasFeeder = await getListKelas(
