@@ -21,8 +21,10 @@ const mabaCollection = io.of("/sync-maba-collection");
 async function allMaba(kd_prodi, angkatan, tahun) {
 	let sqlQuery = SELECT_MABA_PRODI;
 
-	if (kd_prodi === "74101" || kd_prodi === "61101") {
-		let semester = angkatan % 2;
+	let angkatanMhs = tahun.substr(0, 4);
+	let listProdiKhusus = ["74101", "61101", "61001", "62101", "70101"];
+	if (listProdiKhusus.includes(kd_prodi)) {
+		let semester = tahun % 2;
 
 		if (semester === 0) {
 			// semester genap
@@ -35,18 +37,17 @@ async function allMaba(kd_prodi, angkatan, tahun) {
 			}
 		}
 	}
-
 	// testing only
 	// sqlQuery += " LIMIT 5";
 	const data = await db.sequelize
 		.query(sqlQuery, {
 			replacements: {
-				angkatan,
+				angkatan: angkatanMhs,
 				kd_prodi,
 			},
 			raw: true,
 			type: db.sequelize.QueryTypes.SELECT,
-			logging: false,
+			// logging: false,
 		})
 		.catch((err) => {
 			console.log(err);
@@ -123,42 +124,6 @@ mabaCollection.on("connection", async (socket) => {
 					row.jenis_tinngal === 0 ? row.jenis_tinggal : 1;
 				let handphone = row.no_hp.replace("+62", "0");
 
-				let argsBiodata = {
-					nik,
-					nisn,
-					npwp,
-					handphone,
-					nama_mahasiswa: nama,
-					jenis_kelamin: jk,
-					tempat_lahir: row.tpt_lahir,
-					tanggal_lahir: row.tgl_lahir,
-					id_agama: row.agama,
-					kewarganegaraan: row.kewarganegaraan,
-					jalan: row.jalan,
-					rt: row.rt,
-					rw: row.rw,
-					kelurahan: desa.substr(0, 60),
-					kode_pos: row.kode_pos,
-					id_wilayah: row.kec,
-					id_jenis_tinggal: jenis_tinggal,
-					email: row.email,
-					penerima_kps: penerimaKps,
-					nomor_kps: row.penerima_kps,
-					nama_ayah: row.nama_ayah,
-					nama_ibu_kandung: row.nama_ibu,
-					id_kebutuhan_khusus: kebutuhanKhusus,
-					id_kebutuhan_khusus_ayah: 0,
-					id_kebutuhan_khusus_ibu: 0,
-				};
-
-				const respBio = await syncBioMaba(
-					tokenFeeder,
-					npm,
-					nama,
-					argsBiodata
-				);
-
-				({ error_code, error_desc, data } = respBio);
 				let response = {};
 
 				response.list = {
@@ -167,108 +132,162 @@ mabaCollection.on("connection", async (socket) => {
 					name: nama,
 				};
 
-				if (error_code === 0) {
-					let { id_mahasiswa } = data;
-					let dataRiwayatPendidikan = {};
-
-					let tmpNpm = npm.trim().split("");
-					let id_jenis_daftar = null;
-					let tanggal_daftar = await repoFeeder.tanggalDaftar(
-						row.no_ujian
-					);
-
-					if (kd_prodi == "74101" || kd_prodi == "61101") {
-						if (tmpNpm[7] === "5") {
-							id_jenis_daftar = 1;
-						} else {
-							id_jenis_daftar = 2;
-							let sks_diakui = await repoFeeder.sksDiakui(npm);
-							let {
-								id_prodi_asal,
-								id_pt_asal: id_perguruan_tinggi_asal,
-							} = await repoFeeder.ptKonversi(npm);
-
-							let dataKonversi = {
-								sks_diakui,
-								id_prodi_asal,
-								id_perguruan_tinggi_asal,
-							};
-
-							dataRiwayatPendidikan = { ...dataKonversi };
-						}
-					} else {
-						if (tmpNpm[8] === "5") {
-							id_jenis_daftar = 1;
-						} else {
-							id_jenis_daftar = 2;
-							let sks_diakui = await repoFeeder.sksDiakui(npm);
-							let {
-								id_prodi_asal,
-								id_pt_asal: id_perguruan_tinggi_asal,
-							} = await repoFeeder.ptKonversi(npm);
-
-							let dataKonversi = {
-								sks_diakui,
-								id_prodi_asal,
-								id_perguruan_tinggi_asal,
-							};
-
-							dataRiwayatPendidikan = { ...dataKonversi };
-						}
-					}
-
-					let obj2 = {
-						id_mahasiswa,
-						id_jenis_daftar,
-						tanggal_daftar,
-						id_perguruan_tinggi: config.feeder.id_pt,
-						id_periode_masuk: tahun,
-						nim: npm,
-						id_prodi: sms,
-						biaya_masuk: bayarMaba,
+				try {
+					let argsBiodata = {
+						nik,
+						nisn,
+						npwp,
+						handphone,
+						nama_mahasiswa: nama,
+						jenis_kelamin: jk,
+						tempat_lahir: row.tpt_lahir,
+						tanggal_lahir: row.tgl_lahir,
+						id_agama: row.agama,
+						kewarganegaraan: row.kewarganegaraan,
+						jalan: row.jalan,
+						rt: row.rt,
+						rw: row.rw,
+						kelurahan: desa.substr(0, 60),
+						kode_pos: row.kode_pos,
+						id_wilayah: row.kec,
+						id_jenis_tinggal: jenis_tinggal,
+						email: row.email,
+						penerima_kps: penerimaKps,
+						nomor_kps: row.penerima_kps,
+						nama_ayah: row.nama_ayah,
+						nama_ibu_kandung: row.nama_ibu,
+						id_kebutuhan_khusus: kebutuhanKhusus,
+						id_kebutuhan_khusus_ayah: 0,
+						id_kebutuhan_khusus_ibu: 0,
 					};
 
-					dataRiwayatPendidikan = { ...obj2 };
+					const respBio = await syncBioMaba(
+						tokenFeeder,
+						npm,
+						nama,
+						argsBiodata
+					);
 
-					let newToken = await refreshToken();
+					({ error_code, error_desc, data } = respBio);
 
-					let { data: dataNewToken } = newToken;
+					if (error_code === 0) {
+						let { id_mahasiswa } = data;
+						let dataRiwayatPendidikan = {};
 
-					let { token: tokenNew } = dataNewToken;
+						let tmpNpm = npm.trim().split("");
+						let id_jenis_daftar = null;
+						let tanggal_daftar = await repoFeeder.tanggalDaftar(
+							row.no_ujian
+						);
 
-					({ error_code, error_desc, data } =
-						await idRegistrasiMahasiswa(tokenNew, npm));
+						let listProdiKhusus = [
+							"74101",
+							"61101",
+							"61001",
+							"62101",
+							"70101",
+						];
+						if (listProdiKhusus.includes(kd_prodi)) {
+							if (tmpNpm[7] === "5") {
+								id_jenis_daftar = 1;
+							} else {
+								id_jenis_daftar = 2;
+								let sks_diakui = await repoFeeder.sksDiakui(
+									npm
+								);
+								let {
+									id_prodi_asal,
+									id_pt_asal: id_perguruan_tinggi_asal,
+								} = await repoFeeder.ptKonversi(npm);
 
-					if (error_code === 0 && data.length > 0) {
-						response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
-					}
+								let dataKonversi = {
+									sks_diakui,
+									id_prodi_asal,
+									id_perguruan_tinggi_asal,
+								};
 
-					if (error_code === 0 && data.length === 0) {
-						({ error_code, error_desc, data } =
-							await insertRiwayatPendidikan(
-								tokenNew,
-								dataRiwayatPendidikan
-							));
-
-						if (error_code === 0) {
-							response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+								dataRiwayatPendidikan = { ...dataKonversi };
+							}
 						} else {
-							response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
-							response.error_code = error_code;
-							response.error_desc = error_desc;
+							if (tmpNpm[8] === "5") {
+								id_jenis_daftar = 1;
+							} else {
+								id_jenis_daftar = 2;
+								let sks_diakui = await repoFeeder.sksDiakui(
+									npm
+								);
+								let {
+									id_prodi_asal,
+									id_pt_asal: id_perguruan_tinggi_asal,
+								} = await repoFeeder.ptKonversi(npm);
+
+								let dataKonversi = {
+									sks_diakui,
+									id_prodi_asal,
+									id_perguruan_tinggi_asal,
+								};
+
+								dataRiwayatPendidikan = { ...dataKonversi };
+							}
 						}
-					}
 
-					if (error_code > 0) {
+						let obj2 = {
+							id_mahasiswa,
+							id_jenis_daftar,
+							tanggal_daftar,
+							id_perguruan_tinggi: config.feeder.id_pt,
+							id_periode_masuk: tahun,
+							nim: npm,
+							id_prodi: sms,
+							biaya_masuk: bayarMaba,
+						};
+
+						dataRiwayatPendidikan = { ...obj2 };
+
+						let newToken = await refreshToken();
+
+						let { data: dataNewToken } = newToken;
+
+						let { token: tokenNew } = dataNewToken;
+
+						({ error_code, error_desc, data } =
+							await idRegistrasiMahasiswa(tokenNew, npm));
+
+						if (error_code === 0 && data.length > 0) {
+							response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+						}
+
+						if (error_code === 0 && data.length === 0) {
+							({ error_code, error_desc, data } =
+								await insertRiwayatPendidikan(
+									tokenNew,
+									dataRiwayatPendidikan
+								));
+
+							if (error_code === 0) {
+								response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+							} else {
+								response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+								response.error_code = error_code;
+								response.error_desc = error_desc;
+							}
+						}
+
+						if (error_code > 0) {
+							response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+						}
+
+						response.error_code = error_code;
+						response.error_desc = error_desc;
+					} else {
 						response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+						response.error_code = error_code;
+						response.error_desc = error_desc;
 					}
-
-					response.error_code = error_code;
-					response.error_desc = error_desc;
-				} else {
+				} catch (error) {
 					response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
-					response.error_code = error_code;
-					response.error_desc = error_desc;
+					response.error_code = error_code ?? 5;
+					response.error_desc = error.message;
 				}
 
 				mabaCollection

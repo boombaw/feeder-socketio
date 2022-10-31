@@ -23,8 +23,10 @@ async function listMaba(npm, kd_prodi, angkatan, tahun) {
 
 	sqlQuery += " AND KDPSTMSMHS = :kd_prodi";
 
-	if (kd_prodi === "74101" || kd_prodi === "61101") {
-		let semester = angkatan % 2;
+	let angkatanMhs = tahun.substr(0, 4);
+	let listProdiKhusus = ["74101", "61101", "61001", "62101", "70101"];
+	if (listProdiKhusus.includes(kd_prodi)) {
+		let semester = tahun % 2;
 
 		if (semester === 0) {
 			// semester genap
@@ -40,7 +42,7 @@ async function listMaba(npm, kd_prodi, angkatan, tahun) {
 	const data = await db.sequelize.query(sqlQuery, {
 		replacements: {
 			kd_prodi,
-			angkatan,
+			angkatan: angkatanMhs,
 			npm,
 		},
 		type: db.sequelize.QueryTypes.SELECT,
@@ -156,7 +158,14 @@ maba.on("connection", async (socket) => {
 					row.no_ujian
 				);
 
-				if (kd_prodi == "74101" || kd_prodi == "61101") {
+				let listProdiKhusus = [
+					"74101",
+					"61101",
+					"61001",
+					"62101",
+					"70101",
+				];
+				if (listProdiKhusus.includes(kd_prodi)) {
 					if (tmpNpm[7] === "5") {
 						id_jenis_daftar = 1;
 					} else {
