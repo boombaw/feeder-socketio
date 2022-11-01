@@ -44,58 +44,70 @@ async function UpdateAKM(
 	let { error_code, error_desc, data } = status;
 
 	if (error_code === 0) {
-		let { id_status_mahasiswa } = data.shift();
+		try {
+			let { id_status_mahasiswa } = data.shift();
 
-		// get riwayat pendidikan mahasiswa from feeder
-		// destructing data riwayat pendidikan mahasiswa
-		({ error_code, error_desc, data } = await idRegistrasiMahasiswa(
-			token,
-			npm
-		));
-
-		if (error_code === 0) {
-			// get id registrasi mahasiswa from feeder
-			let { id_registrasi_mahasiswa } = data.shift();
-
-			ips = parseFloat(ips).toFixed(2);
-			ipk = parseFloat(ipk).toFixed(2);
-			sks = parseFloat(sks);
-			total_sks = parseFloat(total_sks);
-			biaya = parseInt(biaya, 10);
-
-			let arg = {
-				ips,
-				ipk,
-				sks,
-				total_sks,
-				biaya,
-				id_registrasi_mahasiswa,
-				id_status_mahasiswa,
-				semester,
+			// get riwayat pendidikan mahasiswa from feeder
+			// destructing data riwayat pendidikan mahasiswa
+			({ error_code, error_desc, data } = await idRegistrasiMahasiswa(
+				token,
+				npm
+			));
+	
+			if (error_code === 0) {
+				// get id registrasi mahasiswa from feeder
+				let { id_registrasi_mahasiswa } = data.shift();
+	
+				ips = parseFloat(ips).toFixed(2);
+				ipk = parseFloat(ipk).toFixed(2);
+				sks = parseFloat(sks);
+				total_sks = parseFloat(total_sks);
+				biaya = parseInt(biaya, 10);
+	
+				let arg = {
+					ips,
+					ipk,
+					sks,
+					total_sks,
+					biaya,
+					id_registrasi_mahasiswa,
+					id_status_mahasiswa,
+					semester,
+				};
+	
+				// update akm to feeder
+				({ error_code, error_desc, data } = await updateAkmFeeder(
+					token,
+					arg
+				));
+	
+				if (error_code === 0) {
+					response.list = {
+						order: index,
+						npm,
+						name,
+						status: '<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>',
+					};
+				} else {
+					response.list = {
+						order: index,
+						npm,
+						name,
+						status: '<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>',
+					};
+				}
+			}
+		}catch (error) {
+			response.list = {
+				order: index,
+				npm,
+				name,
+				status: '<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>',
 			};
 
-			// update akm to feeder
-			({ error_code, error_desc, data } = await updateAkmFeeder(
-				token,
-				arg
-			));
-
-			if (error_code === 0) {
-				response.list = {
-					order: index,
-					npm,
-					name,
-					status: '<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>',
-				};
-			} else {
-				response.list = {
-					order: index,
-					npm,
-					name,
-					status: '<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>',
-				};
-			}
+			error_desc = 'Data AKM tidak ditemukan';
 		}
+		
 	}
 
 	response.error_code = error_code;
