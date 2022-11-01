@@ -315,6 +315,17 @@ const insertRiwayatPendidikan = async (token, params) => {
 	return await sendRequest(req);
 };
 
+const updateRiwayatPendidikan = async (token,key, params) => {
+	let req = {
+		token,
+		act: action.UPDATE_RIWAYAT_PENDIDIKAN_MHS,
+		key : {id_registrasi_mahasiswa : key},
+		record: params,
+	};
+
+	return await sendRequest(req);
+};
+
 const getMatakuliahFeeder = async (token, kd_matakuliah, id_sms) => {
 	let filter = `id_prodi = '${id_sms}' and kode_mata_kuliah = '${kd_matakuliah}'`;
 
@@ -501,4 +512,5 @@ module.exports = {
 	InsertDosenPengajar,
 	UpdateDosenPengajar,
 	UpdateNilaiPerkuliahan,
+	updateRiwayatPendidikan
 };

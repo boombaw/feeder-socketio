@@ -10,6 +10,7 @@ const {
 	refreshToken,
 	idRegistrasiMahasiswa,
 	insertRiwayatPendidikan,
+	updateRiwayatPendidikan,
 	syncBioMaba,
 } = require("../../services/feeder");
 
@@ -254,7 +255,21 @@ mabaCollection.on("connection", async (socket) => {
 							await idRegistrasiMahasiswa(tokenNew, npm));
 
 						if (error_code === 0 && data.length > 0) {
-							response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+							let { id_registrasi_mahasiswa } = data[0];
+							({ error_code, error_desc, data } =
+								await updateRiwayatPendidikan(
+									tokenNew,
+									id_registrasi_mahasiswa,
+									dataRiwayatPendidikan
+								));
+		
+								if (error_code === 0) {
+									response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+								} else {
+									response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+									response.error_code = error_code;
+									response.error_desc = error_desc;
+								}
 						}
 
 						if (error_code === 0 && data.length === 0) {

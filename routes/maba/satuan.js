@@ -9,6 +9,7 @@ const {
 	token,
 	refreshToken,
 	idRegistrasiMahasiswa,
+	updateRiwayatPendidikan,
 	insertRiwayatPendidikan,
 	syncBioMaba,
 } = require("../../services/feeder");
@@ -102,8 +103,8 @@ maba.on("connection", async (socket) => {
 			let nama = row.nama.trim().toLowerCase().toUpperCase();
 			let npwp = row.npwp.replace(".", "").replace("-", "");
 			let jenis_tinggal = row.jenis_tinngal === 0 ? row.jenis_tinggal : 1;
-			let handphone = row.no_hp.replace("+62", "0");
-
+			let handphone = row.no_hp.replace("+62", "0").replace(/\s/g, "");
+			
 			let argsBiodata = {
 				nik,
 				nisn,
@@ -230,7 +231,21 @@ maba.on("connection", async (socket) => {
 				));
 
 				if (error_code === 0 && data.length > 0) {
-					response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+					let { id_registrasi_mahasiswa } = data[0];
+					({ error_code, error_desc, data } =
+						await updateRiwayatPendidikan(
+							tokenNew,
+							id_registrasi_mahasiswa,
+							dataRiwayatPendidikan
+						));
+
+						if (error_code === 0) {
+							response.list.status = `<span class="badge rounded-pill bg-success " style="font-size:0.8rem !important">Berhasil</span>`;
+						} else {
+							response.list.status = `<span class="badge rounded-pill bg-danger " style="font-size:0.8rem !important">Gagal</span>`;
+							response.error_code = error_code;
+							response.error_desc = error_desc;
+						}
 				}
 
 				if (error_code === 0 && data.length === 0) {
