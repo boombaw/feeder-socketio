@@ -87,7 +87,7 @@ maba.on("connection", async (socket) => {
 
 			let jk = row.jk === "1" ? "L" : "P";
 			let desa = row.desa === null ? row.jalan : row.desa;
-			let nisn = 0;
+			let nisn = "0";
 			if (row.nisn !== null) {
 				nisn = row.nisn.length > 10 ? "0" : row.nisn;
 			}
