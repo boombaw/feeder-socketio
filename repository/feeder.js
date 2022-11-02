@@ -110,7 +110,7 @@ class Feeder {
 		}
 	}
 
-	async sksDiakui(npm) {
+	async sksDiakui(npm,kd_prodi) {
 		let sqlQuery = `SELECT
 							sum(tmn.sks_matakuliah)  sks_diakui
 						FROM
@@ -118,10 +118,11 @@ class Feeder {
 						JOIN tbl_matakuliah_neww tmn  on
 							tmn.kd_matakuliah = ttnk.KDKMKTRLNM 
 						WHERE
-							NIMHSTRLNM = :npm`;
+							NIMHSTRLNM = :npm AND tmn.kd_prodi = :kd_prodi`;
 		let data = await db.sequelize.query(sqlQuery, {
 			replacements: {
 				npm,
+				kd_prodi
 			},
 			type: db.sequelize.QueryTypes.SELECT,
 			raw: true,
@@ -139,12 +140,12 @@ class Feeder {
 
 	async ptKonversi(npm) {
 		let sqlQuery = `SELECT
-							id_pt_asal ,
-							id_prodi_asal 
+							pt_s1_prodi as id_prodi_asal,
+							pt_s1_name as id_pt_asal
 						FROM
-							tbl_pt_asal_konversi
+							tbl_bio_mhs
 						WHERE
-							npm_mahasiswa = :npm`;
+							npm = :npm`;
 
 		let data = await db.sequelize.query(sqlQuery, {
 			replacements: {

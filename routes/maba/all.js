@@ -197,7 +197,8 @@ mabaCollection.on("connection", async (socket) => {
 							} else {
 								id_jenis_daftar = 2;
 								let sks_diakui = await repoFeeder.sksDiakui(
-									npm
+									npm,
+									kd_prodi
 								);
 								let {
 									id_prodi_asal,
@@ -218,7 +219,7 @@ mabaCollection.on("connection", async (socket) => {
 							} else {
 								id_jenis_daftar = 2;
 								let sks_diakui = await repoFeeder.sksDiakui(
-									npm
+									npm,kd_prodi
 								);
 								let {
 									id_prodi_asal,
@@ -246,7 +247,7 @@ mabaCollection.on("connection", async (socket) => {
 							biaya_masuk: bayarMaba,
 						};
 
-						dataRiwayatPendidikan = { ...obj2 };
+						dataRiwayatPendidikan = { ...dataRiwayatPendidikan, ...obj2 };
 
 						let newToken = await refreshToken();
 

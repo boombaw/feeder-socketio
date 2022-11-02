@@ -174,7 +174,7 @@ maba.on("connection", async (socket) => {
 						id_jenis_daftar = 1;
 					} else {
 						id_jenis_daftar = 2;
-						let sks_diakui = await repoFeeder.sksDiakui(npm);
+						let sks_diakui = await repoFeeder.sksDiakui(npm,kd_prodi);
 						let {
 							id_prodi_asal,
 							id_pt_asal: id_perguruan_tinggi_asal,
@@ -185,6 +185,7 @@ maba.on("connection", async (socket) => {
 							id_prodi_asal,
 							id_perguruan_tinggi_asal,
 						};
+						
 
 						dataRiwayatPendidikan = { ...dataKonversi };
 					}
@@ -193,7 +194,7 @@ maba.on("connection", async (socket) => {
 						id_jenis_daftar = 1;
 					} else {
 						id_jenis_daftar = 2;
-						let sks_diakui = await repoFeeder.sksDiakui(npm);
+						let sks_diakui = await repoFeeder.sksDiakui(npm, kd_prodi);
 						let {
 							id_prodi_asal,
 							id_pt_asal: id_perguruan_tinggi_asal,
@@ -204,7 +205,6 @@ maba.on("connection", async (socket) => {
 							id_prodi_asal,
 							id_perguruan_tinggi_asal,
 						};
-
 						dataRiwayatPendidikan = { ...dataKonversi };
 					}
 				}
@@ -220,7 +220,7 @@ maba.on("connection", async (socket) => {
 					biaya_masuk: bayarMaba,
 				};
 
-				dataRiwayatPendidikan = { ...obj2 };
+				dataRiwayatPendidikan = { ...dataRiwayatPendidikan, ...obj2 };
 
 				let newToken = await refreshToken();
 
