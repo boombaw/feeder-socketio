@@ -98,7 +98,7 @@ const SELECT_AKM_NA = `SELECT
                 WHERE
                     tm.KDPSTMSMHS = :kd_prodi
                 AND tm.NIMHSMSMHS NOT IN (SELECT npm_mahasiswa FROM tbl_verifikasi_krs tvk WHERE tvk.tahunajaran = :tahun AND kd_jurusan = :kd_prodi )
-                AND tm.NIMHSMSMHS NOT IN (SELECT npm FROM tbl_status_mahasiswa tsm WHERE tsm.tahunajaran = :tahun AND validate = 1 )
+                AND tm.NIMHSMSMHS NOT IN (SELECT npm FROM tbl_status_mahasiswa tsm WHERE tsm.tahunajaran = :tahun AND validate = 1 and tsm.status = 'A')
                 AND tm.STMHSMSMHS IN ('A', 'N')
                 AND tm.SMAWLMSMHS >= :study_start AND tm.SMAWLMSMHS <= :tahun
                 AND tm.NIMHSMSMHS NOT IN ('201810115011','201810115024','201810115026','201810115076','201810115298') ;`;
