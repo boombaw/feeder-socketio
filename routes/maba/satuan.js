@@ -104,7 +104,7 @@ maba.on("connection", async (socket) => {
 				}
 
 				let nik = row.nik;
-				let nama = row.nama.trim().toLowerCase().toUpperCase().replace(/\s/g, "");
+				let nama = row.nama.trim().toLowerCase().toUpperCase();
 				let npwp = row.npwp.replace(".", "").replace("-", "");
 				let jenis_tinggal = row.jenis_tinngal === 0 ? row.jenis_tinggal : 1;
 				let handphone = row.no_hp.replace("+62", "0").replace(/\s/g, "");

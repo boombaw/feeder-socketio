@@ -121,7 +121,7 @@ mabaCollection.on("connection", async (socket) => {
 					}
 
 					let nik = row.nik;
-					let nama = row.nama.trim().toLowerCase().toUpperCase().replace(/\s/g, "");
+					let nama = row.nama.trim().toLowerCase().toUpperCase();
 					let npwp =
 						row.npwp === null
 							? ""
