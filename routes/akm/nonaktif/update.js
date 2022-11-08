@@ -143,32 +143,38 @@ updateAKMNA.on("connection", async (socket) => {
 
 			for (let i = 0; i < nonAktifData.length; i++) {
 				const { name, npm } = nonAktifData[i];
-				const akm = await LastAKM(npm);
-				const { ips, ipk, sks, total_sks, biaya } = akm;
-
-				const response = await UpdateNA(
-					name,
-					npm,
-					tahun,
-					ipk,
-					ips,
-					sks,
-					total_sks,
-					biaya,
-					tokenFeeder,
-					i + 1
-				);
-
-				({ error_code, error_desc } = response);
-				const has = Object.prototype.hasOwnProperty;
-				if (has.call(response, "list") && error_code > 0) {
+				try{
+					const akm = await LastAKM(npm);
+					const { ips, ipk, sks, total_sks, biaya } = akm;
+	
+					const response = await UpdateNA(
+						name,
+						npm,
+						tahun,
+						ipk,
+						ips,
+						sks,
+						total_sks,
+						biaya,
+						tokenFeeder,
+						i + 1
+					);
+	
+					({ error_code, error_desc } = response);
+					const has = Object.prototype.hasOwnProperty;
+					if (has.call(response, "list") && error_code > 0) {
+						updateAKMNA
+							.to(userId)
+							.emit("error", JSON.stringify({ error: error_desc }));
+					} else {
+						updateAKMNA
+							.to(userId)
+							.emit("update-akm-na", JSON.stringify(response));
+					}
+				}catch(error){
 					updateAKMNA
-						.to(userId)
-						.emit("error", JSON.stringify({ error: error_desc }));
-				} else {
-					updateAKMNA
-						.to(userId)
-						.emit("update-akm-na", JSON.stringify(response));
+					.to(userId)
+					.emit("error", JSON.stringify({ error: `${error.message} of npm ${npm}` }));
 				}
 			}
 		} else {

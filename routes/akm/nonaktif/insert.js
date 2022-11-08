@@ -27,6 +27,7 @@ async function ListNonAktif(kd_prodi, tahun) {
 			study_start,
 		},
 		type: db.sequelize.QueryTypes.SELECT,
+		logging: false,
 	});
 
 	return data;
@@ -147,36 +148,43 @@ insertAKMNA.on("connection", async (socket) => {
 			for (let i = 0; i < naData.length; i++) {
 				const { npm, name } = naData[i];
 
-				const akm = await LastAKM(npm);
-				const { ips, ipk, sks, total_sks, biaya } = akm;
-
-				const response = await InsertNA(
-					name,
-					npm,
-					tahun,
-					ipk,
-					ips,
-					sks,
-					total_sks,
-					biaya,
-					tokenFeeder,
-					i + 1
-				);
-
-				({ error_code, error_desc } = response);
-
-				if (
-					!Object.prototype.hasOwnProperty.call(response, "list") &&
-					error_code > 0
-				) {
+				try {
+					const akm = await LastAKM(npm);
+					const { ips, ipk, sks, total_sks, biaya } = akm;
+	
+					const response = await InsertNA(
+						name,
+						npm,
+						tahun,
+						ipk,
+						ips,
+						sks,
+						total_sks,
+						biaya,
+						tokenFeeder,
+						i + 1
+					);
+	
+					({ error_code, error_desc } = response);
+	
+					if (
+						!Object.prototype.hasOwnProperty.call(response, "list") &&
+						error_code > 0
+					) {
+						insertAKMNA
+							.to(userId)
+							.emit("error", JSON.stringify({ error: error_desc }));
+					} else {
+						insertAKMNA
+							.to(userId)
+							.emit("insert-akm-na", JSON.stringify(response));
+					}
+				} catch(error) {
 					insertAKMNA
-						.to(userId)
-						.emit("error", JSON.stringify({ error: error_desc }));
-				} else {
-					insertAKMNA
-						.to(userId)
-						.emit("insert-akm-na", JSON.stringify(response));
+					.to(userId)
+					.emit("error", JSON.stringify({ error: `${error.message} of npm : ${npm}` }));
 				}
+				
 			}
 		} else {
 			insertAKMNA

@@ -285,7 +285,6 @@ const updateBio = async (token, id_mahasiswa, args) => {
 		},
 		record: args,
 	};
-
 	return await sendRequest(req);
 };
 
