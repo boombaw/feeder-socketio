@@ -67,11 +67,15 @@ async function UpdateNA(
 		// get id registrasi mahasiswa from feeder
 		const { id_registrasi_mahasiswa } = data.shift();
 
-		ips = parseFloat(ips).toFixed(2);
+		ips = 0;
 		ipk = parseFloat(ipk).toFixed(2);
-		sks = parseFloat(sks);
+		sks = 0;
 		total_sks = parseFloat(total_sks);
-		biaya = parseInt(biaya, 10);
+		if (biaya === null || Number.isNaN(biaya) || biaya === undefined) {
+			biaya = 0;
+		} else {
+			biaya = parseInt(biaya, 10);
+		}
 
 		const arg = {
 			ips,
